@@ -12,6 +12,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
+			],
+			contacts: [
 			]
 		},
 		actions: {
@@ -19,10 +21,51 @@ const getState = ({ getStore, getActions, setStore }) => {
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");
 			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
+			getContactList: () => {
+				fetch("https://playground.4geeks.com/apis/fake/contact/agenda/sofia_cascante_agenda", {
+					method: "GET"
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						setStore({ "contacts": data })
+					})
+					.catch((error) => console.log(error));
+			},
+			addNewContact: (newContact) => {
+				fetch("https://playground.4geeks.com/apis/fake/contact/", {
+					method: "POST",
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(newContact)
+				})
+					.then((data) => {
+						getActions().getContactList()
+						console.log(data)
+					})
+					.catch((error) => console.log(error));
+			},
+			updateContact: (contactId, contactInfo) => {
+				fetch("https://playground.4geeks.com/apis/fake/contact/" + contactId, {
+					method: "PUT",
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(contactInfo)
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						getActions().getContactList()
+						console.log(data)
+					})
+					.catch((error) => console.log(error));
+			},
+			deleteContact: (contactId) => {
+				fetch("https://playground.4geeks.com/apis/fake/contact/" + contactId, {
+					method: "DELETE"
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						getActions().getContactList()
+						console.log(data)
+					})
+					.catch((error) => console.log(error));
 			},
 			changeColor: (index, color) => {
 				//get the store
